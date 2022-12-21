@@ -20,8 +20,8 @@ services:
     ports:
        - "389" # insecure port - use if LDAP_TLS=false
     volumes:
-      #- ./ldap/users.ldif:/container/service/slapd/assets/config/bootstrap/ldif/50-bootstrap.ldif
-      - /share/CACHEDEV5_DATA/rstudio/kerb/users.ldif:/container/service/slapd/assets/config/bootstrap/ldif/50-bootstrap.ldif
+      - ./ldap/users.ldif:/container/service/slapd/assets/config/bootstrap/ldif/50-bootstrap.ldif
+      #- /share/CACHEDEV5_DATA/rstudio/kerb/users.ldif:/container/service/slapd/assets/config/bootstrap/ldif/50-bootstrap.ldif
     environment:
       - LDAP_TLS=false
     command: ["--copy-service", "--loglevel", "debug"]
@@ -83,8 +83,8 @@ services:
     environment:
       RSW_LICENSE: ${RSW_LICENSE}
     volumes:
-     - /share/CACHEDEV5_DATA/rstudio/kerb/krb5.conf:/etc/krb5.conf
-#     - //kerb-postgres-odbc.ini:/etc/odbc.ini
+     #- /share/CACHEDEV5_DATA/rstudio/kerb/krb5.conf:/etc/krb5.conf
+      - ./workbench/krb5.conf:/etc/krb5.conf
     depends_on:
       - openldap
 
