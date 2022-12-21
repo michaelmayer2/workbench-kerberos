@@ -1,6 +1,19 @@
 version: '2.3'
 services:
 
+  postgres:
+    image: postgres:14.5
+    hostname: postgres
+    container_name: slurm-postgres
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "yes"
+      POSTGRES_DB: "rstudio"
+    volumes:
+      - var_lib_postgres:/var/lib/postgres
+    expose:
+      - "5432"
+
   openldap:
     hostname: openldap
     image: osixia/openldap
@@ -49,6 +62,13 @@ services:
       - SMTP_FROM=
       - SMTP_TLS=off
 
+  k-server:
+    hostname: k-server
+    image: rstudio/kerberos:server-1.0
+    build:
+      context: k-server 
+      dockerfile: Dockerfile
+
   rstudio-workbench:
     image: rstudio-workbench-kerb:dev-bionic-2022.12.0-354.pro1 
     build: 
@@ -56,13 +76,18 @@ services:
       dockerfile: Dockerfile
       args: 
         RSTUDIO_VERSION: dev-bionic-2022.12.0-354.pro1 
+        #RSTUDIO_VERSION: bionic-2022.07.2-576.pro12
     privileged: true
     ports:
       - "8790:8787"
     environment:
       RSW_LICENSE: ${RSW_LICENSE}
-#    volumes:
-#     - ./workbench/krb5.conf:/etc/krb5.conf
-#     - ./workbench/kerb-postgres-odbc.ini:/etc/odbc.ini
+    volumes:
+     - /share/CACHEDEV5_DATA/rstudio/kerb/krb5.conf:/etc/krb5.conf
+#     - //kerb-postgres-odbc.ini:/etc/odbc.ini
     depends_on:
       - openldap
+
+
+volumes:
+  var_lib_postgres:
